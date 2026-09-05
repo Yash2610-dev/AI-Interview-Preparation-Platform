@@ -9,12 +9,13 @@ const generateToken = (userId) => {
   });
 };
 
+
 // @desc    Register a new user
 // @route   POST /api/auth/register
 // @access  Public
 export const registerUser = async (req, res) => {
   try {
-    const { name, email, password, profileImageUrl } = req.body;
+    const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
       return res
@@ -34,15 +35,15 @@ export const registerUser = async (req, res) => {
     const user = await User.create({
       name,
       email,
-      password: hashedPassword,
-      profileImageUrl: profileImageUrl || null,
+      password: hashedPassword,    
     });
 
+      console.log("User created:",user);
+      
     res.status(201).json({
       _id: user._id,
       name: user.name,
       email: user.email,
-      profileImageUrl: user.profileImageUrl,
       token: generateToken(user._id),
     });
   } catch (error) {
@@ -64,7 +65,7 @@ export const loginUser = async (req, res) => {
         _id: user._id,
         name: user.name,
         email: user.email,
-        profileImageUrl: user.profileImageUrl,
+        
         token: generateToken(user._id),
       });
     } else {
@@ -74,3 +75,34 @@ export const loginUser = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+
+// @desc    Get user profile
+// @route   GET /api/auth/profile
+// @access  Private
+export const getUserProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select("-password");
+
+    if (user) {
+      res.json(user);
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// export const uploadImage = async (req, res) => {
+//   if (!req.file)
+//     return res.status(400).json({
+//       message: "No File Uploaded",
+//     });
+
+//   const imageUrl = `${req.protocol}://${req.get("")}/uploads/${req.file.filename}`;
+//   res.status(200).json({ imageUrl });
+// };
+
+
+

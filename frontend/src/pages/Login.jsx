@@ -1,9 +1,93 @@
-import React from 'react'
+import { useState } from "react";
+import axios from "../utils/axiosInstance";
+import { API_PATHS } from "../utils/apiPaths";
+import { useNavigate, Link } from "react-router-dom";
 
 const Login = () => {
-  return (
-    <div>Login</div>
-  )
-}
+  const [form, setForm] = useState({ email: "", password: "" });
+  const navigate = useNavigate();
 
-export default Login
+  
+  const handleLogin = async (e) => {
+  e.preventDefault();
+
+  try {
+    const res = await axios.post(
+      "http://localhost:9000/api/auth/login",
+      form
+    );
+
+    localStorage.setItem("token", res.data.token);
+
+    alert("Login Successful");
+
+    navigate("/dashboard"); 
+
+  } catch (error) {
+    console.log(error);
+    alert("Login failed");
+  }
+};
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-yellow-100 via-white to-yellow-50 px-4">
+      <form
+      onSubmit={handleLogin}
+      className="w-full max-w-md bg-white p-8 rounded-2xl shadow-lg">
+        {/* Heading */}
+        <h2 className="text-2xl font-bold text-center mb-2">Welcome Back 👋</h2>
+        <p className="text-gray-500 text-center mb-6 text-sm">
+          Login to continue your interview preparation
+        </p>
+
+        {/* Email */}
+        <input
+          type="email"
+          placeholder="Enter your email"
+          value={form.email}
+          className="w-full border border-gray-300 rounded-lg p-3 mb-4 focus:outline-none focus:ring-2 focus:ring-orange-400"
+          onChange={(e) => setForm({ ...form, email: e.target.value })}
+          autoComplete="email"
+        />
+
+        {/* Password */}
+        <input
+          type="password"
+          placeholder="Enter your password"
+          value={form.password}
+          className="w-full border border-gray-300 rounded-lg p-3 mb-4 focus:outline-none focus:ring-2 focus:ring-orange-400"
+          onChange={(e) => setForm({ ...form, password: e.target.value })}
+          autoComplete="current-password"
+        />
+
+        {/* Button */}
+        <button
+          type="submit"
+          className="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition duration-200"
+        >
+          Login
+        </button>
+
+        {/* Divider */}
+        {/* <div className="flex items-center my-5">
+          <div className="flex-1 h-[1px] bg-gray-200"></div>
+          <p className="px-3 text-gray-400 text-sm">OR</p>
+          <div className="flex-1 h-[1px] bg-gray-200"></div>
+        </div> */}
+
+        {/* Signup Link */}
+        <p className="text-center text-sm text-gray-600">
+          Don’t have an account?{" "}
+          <Link
+            to="/signup"
+            className="text-orange-500 font-medium hover:underline"
+          >
+            Sign Up
+          </Link>
+        </p>
+      </form>
+    </div>
+  );
+};
+
+export default Login;
