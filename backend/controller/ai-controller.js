@@ -199,10 +199,16 @@ export const generateConceptExplanation = async (req, res) => {
 
     const prompt = conceptExplainPrompt(question);
 
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: prompt,
-    });
+   const response = await ai.models.generateContent({
+  model: "gemini-2.5-flash",
+  contents: prompt,
+  config: {
+    responseMimeType: "application/json",
+  },
+});
+
+console.log("RAW GEMINI RESPONSE:");
+console.log(rawText);
 
     const rawText = response.text || "";
 
